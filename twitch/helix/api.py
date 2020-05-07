@@ -4,7 +4,7 @@ from twitch.constants import (
 )
 from twitch.exceptions import TwitchAttributeException
 from twitch.helix.base import APICursor, APIGet
-from twitch.resources import Clip, Follow, Game, Stream, StreamMetadata, Video
+from twitch.resources import Clip, Follow, Game, Stream, StreamMetadata, Video, User
 
 
 class TwitchHelix(object):
@@ -237,3 +237,22 @@ class TwitchHelix(object):
             resource=Follow,
             params=params
         )
+
+    def get_users(self, ids=[], logins=[]):
+        if len(ids) == 0 and len(logins) == 0:
+            raise TwitchAttributeException('at least one id or login must be provided.')
+        if (len(ids) + len(logins)) > 100:
+            raise TwitchAttributeException('Maximum number of objects to return is 100')
+
+        params = {
+            'id': ids,
+            'login': logins
+        }
+
+        return APIGet(
+            client_id=self._client_id,
+            oauth_token=self._oauth_token,
+            path='users',
+            resource=User,
+            params=params
+        ).fetch()
